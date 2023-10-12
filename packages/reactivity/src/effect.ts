@@ -12,10 +12,15 @@ function cleanupEffect(effect) {
 
 export class ReactiveEffect {
   // 默认会将fn挂载到类的实例上
-  constructor(private fn) {}
+  constructor(private fn, public scheduler) {}
   parent = undefined;
   deps = []
+  active = true
   run() {
+    // 失活 调用run只是 执行 并不进行依赖收集
+    if (!this.active) {
+      return this.fn();
+    }
     try {
       this.parent = activeEffect; // 处理那种嵌套问题
       activeEffect = this;
@@ -27,11 +32,21 @@ export class ReactiveEffect {
       activeEffect = this.parent;
     }
   }
+  stop() {
+    if (this.active) {
+      this.active = false
+      cleanupEffect(this)
+    }
+  }
 }
 
-export function effect(fn) {
-  const _effect = new ReactiveEffect(fn);
+export function effect(fn, options: any = {}) {
+  const _effect = new ReactiveEffect(fn, options.scheduler);
   _effect.run();
+
+  const runner = _effect.run.bind(_effect)
+  runner.effect = _effect
+  return runner
 }
 
 // {name: "xz"}: name -> [effect, effect]
@@ -71,7 +86,11 @@ export function trigger(target, key, newVal, oldVal) {
     effects.forEach((effect) => {
       // 自己不要执行自己 否则就是死循环
       if (effect !== activeEffect) {
-        effect.run();
+        if (effect.scheduler) {
+          effect.scheduler()
+        } else {
+          effect.run();
+        }
       }
     });
 }

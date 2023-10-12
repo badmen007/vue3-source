@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      // import {
+      //   reactive,
+      //   effect,
+      // } from "../../../node_modules/@vue/reactivity/dist/reactivity.esm-browser.js";
+
+      import { reactive, effect } from "./reactivity.js";
+
+      const state = reactive({ name: "xz", address: { n: '123'} });
+
+      const runner = effect(
+        () => {
+          console.log("runner");
+          app.innerHTML = state.address.n;
+        },
+        {
+          scheduler: () => {
+            setTimeout(() => {
+              runner();
+            }, 1000);
+          },
+        }
+      );
+      
+        setTimeout(() => {
+          state.address.n = 3030
+        })
+
+      // runner.effect.stop();
+
+      // 默认情况下是自动更新的 数据变化之后更新 effect
+      // setTimeout(() => {
+      //   // state.name = 2222
+      //   // state.name = 1111
+      //   // state.name = 4444
+
+      //   runner();
+      //   state.name = 22222;
+      // }, 1000);
+    </script>
+  </body>
+</html>

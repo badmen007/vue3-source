@@ -1,5 +1,6 @@
+import { isObject } from "@vue/shared";
 import { track, trigger } from "./effect";
-import { ReactiveFlags } from "./reactive";
+import { ReactiveFlags, reactive } from "./reactive";
 
 export const mutableHandlers = {
   get(target, key, receiver) {
@@ -9,7 +10,9 @@ export const mutableHandlers = {
     if (key === ReactiveFlags.IS_REACTIVE) {
       return true
     }
-
+    if (isObject(target[key])) {
+      return reactive(target[key])
+    }
     // 依赖收集 记录属性和当前的effect关系
     const res = Reflect.get(target, key, receiver);
     track(target, key);
