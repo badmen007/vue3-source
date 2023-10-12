@@ -13,7 +13,24 @@
       //   effect,
       // } from "../../../node_modules/@vue/reactivity/dist/reactivity.esm-browser.js";
 
-      import { reactive } from "./reactivity.js";
+      import { reactive, effect } from "./reactivity.js";
+
+      const state = reactive({ name: "xz", age: 10 });
+
+      // 2.effect所有的渲染都是基于它来实现的
+      effect(() => {
+        // 默认先执行一次
+        app.innerHTML = state.name + state.age;
+        // effect(() => {
+        //   // 默认先执行一次
+        //   app.innerHTML = state.name;
+        // });
+      });
+      setTimeout(() => {
+        state.name = '大大大啊'
+      }, 1000)
+
+      /*
       const obj = { name: "xz", age: 10 }
       // 多次代理
       // const state = reactive(obj);
@@ -23,9 +40,10 @@
       const state1 = reactive(state)
 
       console.log(state === state1)
+      */
 
       /*
-
+        
       // 1 创建一个响应式对象 reactive
 
       const state = reactive({ name: "xz", age: 10 });

@@ -17,12 +17,11 @@ export function reactive(target) {
 
   if (target[ReactiveFlags.IS_REACTIVE]) {
     return target
-  } 
+  }
   const proxy = new Proxy(target, mutableHandlers);
 
   reactiveMap.set(target, proxy);
 
   // 已经被proxy代理过了 
-
   return proxy;
 }
