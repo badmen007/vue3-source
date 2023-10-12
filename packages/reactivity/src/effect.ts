@@ -1,4 +1,15 @@
 export let activeEffect = undefined;
+
+function cleanupEffect(effect) {
+  const { deps } = effect
+  for(let i = 0; i < deps.length; i++) {
+    // 遍历删除自己
+    deps[i].delete(effect)
+  }
+  // 清空数组
+  effect.deps.length = 0
+}
+
 export class ReactiveEffect {
   // 默认会将fn挂载到类的实例上
   constructor(private fn) {}
@@ -8,6 +19,9 @@ export class ReactiveEffect {
     try {
       this.parent = activeEffect; // 处理那种嵌套问题
       activeEffect = this;
+      // 清理上次的依赖收集
+      cleanupEffect(this)
+      // fn调用的时候会触发依赖收集
       return this.fn();
     } finally {
       activeEffect = this.parent;
@@ -51,10 +65,13 @@ export function trigger(target, key, newVal, oldVal) {
   const depsMap = targetMap.get(target)
   if (!depsMap) return;
   const dep = depsMap.get(key)
-  dep && dep.forEach(effect => {
-    // 自己不要执行自己 否则就是死循环
-    if (effect !== activeEffect) {
-      effect.run()
-    }
-  })
+  const effects = [...dep]
+
+  effects &&
+    effects.forEach((effect) => {
+      // 自己不要执行自己 否则就是死循环
+      if (effect !== activeEffect) {
+        effect.run();
+      }
+    });
 }
