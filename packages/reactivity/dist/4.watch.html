@@ -12,33 +12,69 @@
       //   reactive,
       //   effect,
       //   watch,
-      //   watchEffect
+      //   watchEffect,
       // } from "../../../node_modules/@vue/runtime-dom/dist/runtime-dom.esm-browser.js";
 
       import { reactive, effect, watch, watchEffect } from "./reactivity.js";
 
-      const state = reactive({ name: "xz", address: { n: "123" } });
+      const state = reactive({ name: "xz", address: { n: "123" }, age: 1 });
 
       // 对象是无法监控到前后值的更改
       // watch(state, (newVal, oldVal) => {
       //   console.log('数据变化了', newVal, oldVal)
-      // }, { flush: 'sync'}); // flush 表示成同步的  
+      // }, { flush: 'sync'}); // flush 表示成同步的
       // watch(() => state.name, (newVal, oldVal) => {
       //   console.log('数据变化了', newVal, oldVal)
       // }, { flush: 'sync'})
       // state.name = '2222'
       // console.log('数据变化outer')
 
+      // watchEffect(() => {
+      //   app.innerHTML = state.name
+      // })
 
-      watchEffect(() => {
-        app.innerHTML = state.name
-      })
+      // setTimeout(() => {
+      //   state.name = 'xxx'
+      // }, 1000)
 
-      setTimeout(() => {
-        state.name = 'xxx'
-      }, 1000)
+      // watch大部分的场景都是， 监控数据的变化，发送请求
+      // 模拟输入框的场景 百度输入框
+      // 1 -> 发送请求 2s返回
+      // 2 -> 发送请求 1s返回
 
+      // 最终的1为准，实际上该用2的结果
 
+      let timer = 3000
+      function getDate(data) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(data)
+          }, timer -= 1000)
+        })
+      }
+
+      let arr = [] // 第二次执行的时候就把第一次的干掉了
+      // 什么是闭包？定义函数的作用域和执行函数的作用域不是同一个
+      watch(() => state.age, async function(newVal, oldVal, onCleanup) {
+        // while(arr.length) {
+        //   arr.shift()()
+        // }
+
+        let flag = true
+        // arr.push(function() {
+        //   flag = false
+        // })
+        onCleanup(function() {
+          flag = false
+        })
+
+        let r = await getDate(newVal)
+        console.log(r);
+        flag && (app.innerHTML = r)
+      }, { flush: 'sync'})
+      
+      state.age = 100
+      state.age = 200
     </script>
   </body>
 </html>

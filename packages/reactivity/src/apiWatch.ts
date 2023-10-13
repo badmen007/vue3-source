@@ -33,10 +33,16 @@ export function doWatch(source, cb, options) {
     getter = source;
   }
   let oldVal;
+  let clear
+  let onCleanup = (fn) => {
+    clear = fn
+  }
+
   const job = () => {
     if (cb) {
+      if (clear) clear();
       const newVal = effect.run();
-      cb(newVal, oldVal);
+      cb(newVal, oldVal, onCleanup);
       oldVal = newVal; 
     } else {
       // 其他的情况就是watchEffect
