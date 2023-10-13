@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      // import {
+      //   reactive,
+      //   effect,
+      //   watch,
+      //   watchEffect
+      // } from "../../../node_modules/@vue/runtime-dom/dist/runtime-dom.esm-browser.js";
+
+      import { reactive, effect, watch, watchEffect } from "./reactivity.js";
+
+      const state = reactive({ name: "xz", address: { n: "123" } });
+
+      // 对象是无法监控到前后值的更改
+      // watch(state, (newVal, oldVal) => {
+      //   console.log('数据变化了', newVal, oldVal)
+      // }, { flush: 'sync'}); // flush 表示成同步的  
+      // watch(() => state.name, (newVal, oldVal) => {
+      //   console.log('数据变化了', newVal, oldVal)
+      // }, { flush: 'sync'})
+      // state.name = '2222'
+      // console.log('数据变化outer')
+
+
+      watchEffect(() => {
+        app.innerHTML = state.name
+      })
+
+      setTimeout(() => {
+        state.name = 'xxx'
+      }, 1000)
+
+
+    </script>
+  </body>
+</html>

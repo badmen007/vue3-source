@@ -25,3 +25,7 @@ export function reactive(target) {
   // 已经被proxy代理过了 
   return proxy;
 }
+
+export function isReactive(value) {
+  return value[ReactiveFlags.IS_REACTIVE]
+}
