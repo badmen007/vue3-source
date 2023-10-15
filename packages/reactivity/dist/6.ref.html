@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      // import {
+      //   reactive,
+      //   effect,
+      //   watch,
+      //   watchEffect,
+      //   computed,
+      //   ref,
+      // } from "../../../node_modules/@vue/runtime-dom/dist/runtime-dom.esm-browser.js";
+
+      import {
+        reactive,
+        effect,
+        watch,
+        watchEffect,
+        computed,
+        ref
+      } from "./reactivity.js";
+
+      let flag = ref(true)  // 就是将变量包装了一层
+
+      effect(() => {
+        app.innerHTML = flag.value
+      })
+
+      setTimeout(() => {
+        flag.value = false
+      }, 1000)
+    </script>
+  </body>
+</html>

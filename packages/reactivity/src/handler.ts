@@ -1,6 +1,7 @@
 import { isObject } from "@vue/shared";
 import { track, trigger } from "./effect";
 import { ReactiveFlags, reactive } from "./reactive";
+import { isRef } from "./ref";
 
 export const mutableHandlers = {
   get(target, key, receiver) {
@@ -10,6 +11,11 @@ export const mutableHandlers = {
     if (key === ReactiveFlags.IS_REACTIVE) {
       return true
     }
+
+    if (isRef(target[key])) {
+      return target[key].value
+    }
+
     if (isObject(target[key])) {
       return reactive(target[key])
     }

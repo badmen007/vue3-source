@@ -6,6 +6,7 @@ class ComputedRefImpl {
   public _value;
   public _dirty = true;
   public dep = new Set()
+  public __v_isRef = true
   constructor(getter, public setter) {
     this.effect = new ReactiveEffect(getter, () => {
       if (!this._dirty) {

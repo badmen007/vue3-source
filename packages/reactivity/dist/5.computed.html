@@ -24,7 +24,7 @@
         computed,
       } from "./reactivity.js";
 
-      const state = reactive({ firstName: "a", lastName: "b" });
+      // const state = reactive({ firstName: "a", lastName: "b", fullName });
 
       // 计算属性的应用场景，主要是根据其他的数据进行衍生数据的
       // 计算属性默认是懒执行的，如果依赖的值不发生变化不会重新执行 dirty 缓存
@@ -40,9 +40,11 @@
           console.log(val);
         },
       });
+      
+      const state = reactive({ firstName: "a", lastName: "b", fullName });
 
       effect(() => {
-        app.innerHTML = fullName.value;
+        app.innerHTML = state.fullName;
       });
 
       setTimeout(() => {
