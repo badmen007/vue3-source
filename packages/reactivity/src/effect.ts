@@ -12,7 +12,7 @@ function cleanupEffect(effect) {
 
 export class ReactiveEffect {
   // 默认会将fn挂载到类的实例上
-  constructor(private fn, public scheduler) {}
+  constructor(private fn, public scheduler?) {}
   parent = undefined;
   deps = []
   active = true
@@ -65,29 +65,36 @@ export function track(target, key) {
     if (!dep) {
       depsMap.set(key, (dep = new Set()));
     }
-
-    let shouldTrack = !dep.has(activeEffect)
-
-    if (shouldTrack) {
-      dep.add(activeEffect)
-      // 为啥要进行这一步
-      activeEffect.deps.push(dep)
-    }
+    trackEffects(dep)
   }
 }
+
+export function trackEffects(dep) {
+  let shouldTrack = !dep.has(activeEffect);
+  if (shouldTrack) {
+    dep.add(activeEffect);
+    // 为啥要进行这一步
+    activeEffect.deps.push(dep);
+  }
+}
+
 export function trigger(target, key, newVal, oldVal) {
   // 找到属性对应的effect重新执行
   const depsMap = targetMap.get(target)
   if (!depsMap) return;
   const dep = depsMap.get(key)
-  const effects = [...dep]
+  triggerEffects(dep)
+}
+
+export function triggerEffects(dep) {
+  const effects = [...dep];
 
   effects &&
     effects.forEach((effect) => {
       // 自己不要执行自己 否则就是死循环
       if (effect !== activeEffect) {
         if (effect.scheduler) {
-          effect.scheduler()
+          effect.scheduler();
         } else {
           effect.run();
         }

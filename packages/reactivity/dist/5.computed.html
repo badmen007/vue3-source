@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      // import {
+      //   reactive,
+      //   effect,
+      //   watch,
+      //   watchEffect,
+      //   computed
+      // } from "../../../node_modules/@vue/runtime-dom/dist/runtime-dom.esm-browser.js";
+
+      import {
+        reactive,
+        effect,
+        watch,
+        watchEffect,
+        computed,
+      } from "./reactivity.js";
+
+      const state = reactive({ firstName: "a", lastName: "b" });
+
+      // 计算属性的应用场景，主要是根据其他的数据进行衍生数据的
+      // 计算属性默认是懒执行的，如果依赖的值不发生变化不会重新执行 dirty 缓存
+      // 计算属性的值自身无法修改
+      // 依赖的值发生变化了之后，后续取值可以获取到新的值
+
+      const fullName = computed({
+        get() {
+          console.log("getter");
+          return state.firstName + state.lastName;
+        },
+        set(val) {
+          console.log(val);
+        },
+      });
+
+      effect(() => {
+        app.innerHTML = fullName.value;
+      });
+
+      setTimeout(() => {
+        state.firstName = "xxx";
+      }, 1000);
+
+      // console.log(fullName.value)
+      // console.log(fullName.value)
+      // state.firstName = 'hello'
+      // console.log(fullName.value)
+
+      // fullName.value = 100
+    </script>
+  </body>
+</html>
