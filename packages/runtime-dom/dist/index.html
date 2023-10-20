@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      // import {
+      //   createRenderer,
+      //   h,
+      //   render,
+      // } from "/node_modules/@vue/runtime-dom/dist/runtime-dom.esm-browser.js";
+      import { h, render } from './runtime-dom.js'
+
+      // const vDom = h("div");
+      // const vDom = h("div", h('span'));
+      // const vDom = h("div", { style: { color: "red" } });
+      // const vDom = h("div", [h("span"), h("span")]);
+      // const vDom = h("div", {}, [h("span"), h("span")]);
+      // const vDom = h("div", {}, h("span"), h("span"));
+      // const vDom = h('div', {}, ['hello','hello','hello'])
+
+      const vDom = h('div', {style: {color: 'red'}}, h('span', 'hello'))
+      console.log(vDom);
+      // const renderer = createRenderer({
+      //   insert(element, container) {
+      //     container.appendChild(element);
+      //   },
+      //   createElement(element) {
+      //     return document.createElement(element);
+      //   },
+      //   setElementText(element, text) {
+      //     element.innerHTML = text;
+      //   },
+      // });
+      // renderer.render(vDom, app);
+      // 相当于上面代码的封装
+      render(vDom, app);
+    </script>
+  </body>
+</html>
