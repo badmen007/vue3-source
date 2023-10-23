@@ -13,7 +13,7 @@
       //   h,
       //   render,
       // } from "/node_modules/@vue/runtime-dom/dist/runtime-dom.esm-browser.js";
-      import { h, render } from './runtime-dom.js'
+      import { h, render } from "./runtime-dom.js";
 
       // const vDom = h("div");
       // const vDom = h("div", h('span'));
@@ -23,8 +23,20 @@
       // const vDom = h("div", {}, h("span"), h("span"));
       // const vDom = h('div', {}, ['hello','hello','hello'])
 
-      const vDom = h('div', {style: {color: 'red'}}, h('span', 'hello'))
-      console.log(vDom);
+      const vDom1 = h("div", [
+        h("div", { key: "d" }, "d"),
+        h("div", { key: "e" }, "e"),
+        h("div", { key: "a" }, "a"),
+        h("div", { key: "b" }, "b"),
+        h("div", { key: "c" }, "c"),
+      
+      ]);
+      const vDom2 = h("div", [
+        h("div", { key: "a" }, "a"),
+        h("div", { key: "b" }, "b"),
+        h("div", { key: "c" }, "c"),
+      ]);
+
       // const renderer = createRenderer({
       //   insert(element, container) {
       //     container.appendChild(element);
@@ -38,7 +50,10 @@
       // });
       // renderer.render(vDom, app);
       // 相当于上面代码的封装
-      render(vDom, app);
+      render(vDom1, app);
+      setTimeout(() => {
+        render(vDom2, app);
+      }, 2000);
     </script>
   </body>
 </html>
