@@ -1,5 +1,7 @@
 import { ShapeFlags, isString } from "@vue/shared";
 
+export const Text = Symbol('Text')
+
 export function isVNode(val) {
   return !!(val && val.__v_isVNode);
 }
@@ -27,6 +29,7 @@ export function createVNode(type, props?, children?) {
     if (Array.isArray(children)) {
       type = ShapeFlags.ARRAY_CHILDREN;
     } else {
+      vnode.children = String(children)
       type = ShapeFlags.TEXT_CHILDREN;
     }
     vnode.shapeFlag |= type;
