@@ -1,9 +1,22 @@
-import { ShapeFlags, isString } from "@vue/shared";
+import { ShapeFlags, isNumber, isString } from "@vue/shared";
 
 export const Text = Symbol('Text')
+export const Fragment = Symbol("Fragment");
 
 export function isVNode(val) {
   return !!(val && val.__v_isVNode);
+}
+
+export function convert(child) {
+  if (isString(child) || isNumber(child)) {
+    return createVNode(Text, null, child);
+  } else {
+    return child;
+  }
+}
+
+export function normalizeChildren(children) {
+  return children.map(convert)
 }
 
 // 判断两个虚拟节点是不是同一个节点
@@ -27,6 +40,7 @@ export function createVNode(type, props?, children?) {
   if (children) {
     let type = 0;
     if (Array.isArray(children)) {
+      vnode.children = normalizeChildren(children)
       type = ShapeFlags.ARRAY_CHILDREN;
     } else {
       vnode.children = String(children)

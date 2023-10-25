@@ -1,5 +1,5 @@
-import { isNumber, isString, ShapeFlags } from "@vue/shared";
-import { createVNode, isSameVnode, Text } from "./createVNode";
+import { ShapeFlags } from "@vue/shared";
+import { convert, Fragment, isSameVnode, Text } from "./createVNode";
 
 function getSeq(arr) {
   const result = [0];
@@ -58,13 +58,7 @@ export function createRenderer(options) {
     patchProps: hostPatchProps,
   } = options;
 
-  function convert(child) {
-    if (isString(child) || isNumber(child)) {
-      return createVNode(Text, null, child)
-    } else {
-      return child
-    }
-  }
+ 
   const mountChildren = (children, container) => {
     // 递归创建儿子
     for (let i = 0; i < children.length; i++) {
@@ -292,6 +286,13 @@ export function createRenderer(options) {
       }
     }
   }
+  function processFragment(n1, n2, container) {
+    if (n1 == null) {
+      mountChildren(n2.children, container)
+    } else {
+      patchKeyedChildren(n1.children, n2.children, container)
+    }
+  }
   // 每次更新都会重新执行
   const patch = (n1, n2, container, anchor = null) => {
     if (n1 && !isSameVnode(n1, n2)) {
@@ -305,6 +306,9 @@ export function createRenderer(options) {
       case Text:
         processText(n1, n2, container);
         break;
+      case Fragment:
+        processFragment(n1, n2, container);
+        break
       default:
         processElement(n1, n2, container, anchor);
     }

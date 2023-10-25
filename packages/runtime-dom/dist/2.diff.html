@@ -12,16 +12,17 @@
       //   createRenderer,
       //   h,
       //   render,
-      //   Text
+      //   Text,
+      //   Fragment
       // } from "/node_modules/@vue/runtime-dom/dist/runtime-dom.esm-browser.js";
-      import { h, render, Text } from "./runtime-dom.js";
+      import { h, render, Text, Fragment } from "./runtime-dom.js";
 
-      const vNode = h('div', {}, ["hello", "hello"]);
+      const vNode = h(Fragment, {}, ["hello", "hello"]);
       render(vNode, app);
-      // setTimeout(() => {
-      //   const vNode1 = h(Text, {}, "hello1111");
-      //   render(vNode1, app);
-      // }, 1000);
+      setTimeout(() => {
+        const vNode1 = h(Fragment, {}, ["hello", "world"]);
+        render(vNode1, app);
+      }, 1000);
     </script>
   </body>
 </html>
