@@ -1,6 +1,6 @@
-import { ShapeFlags, isNumber, isString } from "@vue/shared";
+import { ShapeFlags, isNumber, isObject, isString } from "@vue/shared";
 
-export const Text = Symbol('Text')
+export const Text = Symbol("Text");
 export const Fragment = Symbol("Fragment");
 
 export function isVNode(val) {
@@ -16,16 +16,20 @@ export function convert(child) {
 }
 
 export function normalizeChildren(children) {
-  return children.map(convert)
+  return children.map(convert);
 }
 
 // 判断两个虚拟节点是不是同一个节点
 export function isSameVnode(n1, n2) {
-  return n1.type === n2.type && n1.key === n2.key
+  return n1.type === n2.type && n1.key === n2.key;
 }
 
 export function createVNode(type, props?, children?) {
-  const shapeFlag = isString(type) ? ShapeFlags.ELEMENT : 0;
+  const shapeFlag = isString(type)
+    ? ShapeFlags.ELEMENT
+    : isObject(type)
+    ? ShapeFlags.STATEFUL_COMPONENT // 表示是一个组件
+    : 0;
 
   const vnode = {
     shapeFlag,
@@ -40,10 +44,10 @@ export function createVNode(type, props?, children?) {
   if (children) {
     let type = 0;
     if (Array.isArray(children)) {
-      vnode.children = normalizeChildren(children)
+      vnode.children = normalizeChildren(children);
       type = ShapeFlags.ARRAY_CHILDREN;
     } else {
-      vnode.children = String(children)
+      vnode.children = String(children);
       type = ShapeFlags.TEXT_CHILDREN;
     }
     vnode.shapeFlag |= type;

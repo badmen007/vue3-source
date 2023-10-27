@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      // import {
+      //   createRenderer,
+      //   h,
+      //   render,
+      //   Text,
+      //   Fragment
+      // } from "/node_modules/@vue/runtime-dom/dist/runtime-dom.esm-browser.js";
+      import { h, render, Text, Fragment } from "./runtime-dom.js";
+
+      // 组件的核心 组成： 状态 属性 事件 生命周期 插槽 
+      // 所有的传递给子组件的属性 = props + $attrs 也就是说没有在$attrs中声明的属性都在$attrs中
+      const MyComponent = {
+        props: {
+          a: Number,
+          b: Number
+        },
+        data() {
+          return { name: 'xxx', age: 20}
+        },
+        render(proxy) {
+          // 不该在render中写逻辑
+          // setTimeout(() => {
+          //   proxy.age++
+          //   proxy.age++
+          // }, 1000)
+          console.log(proxy)
+          return h('div', {}, [h('span', this.name), h('span', this.age), h('span', proxy.a), h('span', proxy.$attrs.c)])
+        }
+      }
+      // 组件通过h方法去渲染
+      render(h(MyComponent, {a: 1, b: 2, c: 3}), app)
+
+    </script>
+  </body>
+</html>

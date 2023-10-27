@@ -1,5 +1,9 @@
 import { ShapeFlags } from "@vue/shared";
 import { convert, Fragment, isSameVnode, Text } from "./createVNode";
+import { reactive } from "packages/reactivity/src/reactive";
+import { ReactiveEffect } from "packages/reactivity/src/effect";
+import { queueJob } from "./scheduler";
+import { initProps } from "./componentProps";
 
 function getSeq(arr) {
   const result = [0];
@@ -293,6 +297,56 @@ export function createRenderer(options) {
       patchKeyedChildren(n1.children, n2.children, container)
     }
   }
+
+  function mountComponent(n2, container) {
+    const { data = () => ({}), render, props: propsOptions = { } } = n2.type
+
+    const state = reactive(data())
+    const instance = {
+      state,
+      isMounted: false, // 是否挂载成功
+      vnode: n2, // 就是对象里面的东西发生了变化
+      subTree: null, // 组件里面的render渲染的节点
+      update: null,
+      propsOptions,
+      props: {},
+      attrs: {}
+    }
+    n2.component = instance; // 元素的更新保存的是元素，组件的更新保存的是组件的实例
+
+    initProps(instance, n2.props)
+
+    const componentUpdateFn = () => {
+      // 要区分是不是第一次挂载
+      if (!instance.isMounted) {
+        instance.isMounted = true
+        const subTree = render.call(state, state)
+        patch(null, subTree, container)
+        instance.subTree = subTree
+      } else { 
+        // 组件自身的状态发生了变化
+        const subTree = render.call(state, state);
+        patch(instance.subTree, subTree, container)
+        instance.subTree = subTree;
+      }
+    }
+
+    const effect = new ReactiveEffect(componentUpdateFn, () => {
+      queueJob(instance.update)
+    })
+    const update = (instance.update = effect.run.bind(effect))
+    update();
+  }
+
+  function processComponent(n1, n2, container) {
+    if (n1 == null) {
+      mountComponent(n2, container);
+    } else {
+      // 更新属性
+      // patchComponent()
+    }
+  }
+
   // 每次更新都会重新执行
   const patch = (n1, n2, container, anchor = null) => {
     if (n1 && !isSameVnode(n1, n2)) {
@@ -301,7 +355,7 @@ export function createRenderer(options) {
       // 这里不是要替换n1变成n2吗？ 把n1置成null就会走下面的逻辑
     }
 
-    const { type } = n2;
+    const { type, shapeFlag } = n2;
     switch (type) {
       case Text:
         processText(n1, n2, container);
@@ -310,7 +364,11 @@ export function createRenderer(options) {
         processFragment(n1, n2, container);
         break
       default:
-        processElement(n1, n2, container, anchor);
+        if (shapeFlag & ShapeFlags.ELEMENT) {
+          processElement(n1, n2, container, anchor);
+        } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
+          processComponent(n1, n2, container)
+        }
     }
   };
 
