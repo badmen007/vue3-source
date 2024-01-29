@@ -3,12 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>vue3</title>
 </head>
 <body>
   <script type="module">
-    import { isObject } from './reactivity.js'
-    console.log(isObject(232323))
+    import { reactive } from './reactivity.js'
+    const data = {name: 'aa', age: 'bb'}
+    debugger
+    const state = reactive(data)
+    // 代理过之后再重新代理
+    // const state1 = reactive(data)
+    // 当传入的是代理之后的对象怎么办
+    const state2 = reactive(state)
   </script>
 </body>
 </html>

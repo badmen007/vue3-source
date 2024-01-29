@@ -1,1 +1,1 @@
-export * from '@vue/shared'
+export * from './reactive'
