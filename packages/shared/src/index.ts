@@ -5,4 +5,6 @@ export const isObject = (val) => {
 // Object.is 判断两个值一不一样 不会对值进行转化
 export const hasChanged = (value, oldValue) => !Object.is(value, oldValue);
 
-export const isArray = Array.isArray
+export const isArray = Array.isArray;
+
+export const isFunction = (val) => typeof val == "function";

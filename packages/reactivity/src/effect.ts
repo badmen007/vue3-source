@@ -1,10 +1,11 @@
-let activeEffect;
+export let activeEffect;
 const targetMap = new WeakMap();
 
-class ReactiveEffect {
+export class ReactiveEffect {
   fn;
   parent;
   deps = [];
+  computed
   constructor(fn, public scheduler?) {
     this.fn = fn;
   }
@@ -52,7 +53,7 @@ export function track(target, key) {
   }
 }
 
-function trackEffects(dep) {
+export function trackEffects(dep) {
   let shouldTrack = false;
 
   // 源码中这里用了很多的位运算 暂时不考虑
@@ -101,7 +102,7 @@ export function triggerEffects(dep) {
 }
 
 export function effect(fn, options?) {
-  const _effect = new ReactiveEffect(fn, options.scheduler);
+  const _effect = new ReactiveEffect(fn, options?.scheduler);
   
   if (!options || !options.lazy) {
     _effect.run();

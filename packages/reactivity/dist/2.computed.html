@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vue3</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      import { reactive, effect, computed } from "./reactivity.js";
+      //
+      const state = reactive({ firstName: "zs", lastName: "li" });
+      const fullName = computed(() => {
+        console.log("computed");
+        return state.firstName + "," + state.lastName;
+      });
+
+      effect(() => {
+        console.log(fullName.value);
+        console.log(fullName.value);
+        console.log(fullName.value);
+        console.log(fullName.value);
+      });
+
+      setTimeout(() => {
+        state.firstName = "ww";
+      }, 1000);
+    </script>
+  </body>
+</html>
